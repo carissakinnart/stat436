@@ -1,0 +1,60 @@
+---
+title: "project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(tidyr)
+library(readr)
+library(dplyr)
+```
+
+```{r}
+# link to kaggle dataset: https://www.kaggle.com/datasets/akshaydattatraykhare/diabetes-dataset
+
+
+```
+
+
+```{r}
+diabetes <- read_csv("https://uwmadison.app.box.com/shared/static/xnfqf336w3pps1szqxxu513dajok7fhw")
+
+```
+
+
+```{r}
+diabetes <- diabetes%>%
+  filter(BloodPressure != 0 & BMI != 0)
+
+summary(lm(Outcome ~ 1 + Insulin + Insulin:BMI, data = diabetes))
+  
+
+```
+
+
+
+```{r}
+diabetes$Outcome <- as.character(diabetes$Outcome)
+diabetes <- diabetes%>%
+  mutate(Age_Group = case_when(Age >= 20 & Age <=29 ~ "20-29",
+                              Age >= 30 & Age <= 39 ~ "30-39",
+                               Age >= 40 & Age <= 49 ~ "40-49",
+                              Age >= 50 & Age <= 59 ~ "50-59",
+                              Age >= 60 ~ "60+"))
+
+```
+
+```{r}
+ggplot(diabetes, aes(Insulin, BMI, col = Outcome))+
+  geom_point(size = .8)+
+  geom_line()+
+  facet_grid(Age_Group~.)+
+  labs(x = "Insulin Level", y = "BMI", title = "Interaction Between BMI and Insulin Levels on Diabetic Outcome by Age Group", fill = "Diabetic Outcome")+
+  theme(strip.text.y = element_text(angle = 0))
+```
+
